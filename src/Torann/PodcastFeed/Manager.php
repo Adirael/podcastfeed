@@ -56,11 +56,11 @@ class Manager
     private $author;
 
     /**
-     * Category of the podcast.
+     * Categories of the podcast.
      *
-     * @var string
+     * @var array
      */
-    private $category = null;
+    private $categories = [];
 
     /**
      * Language of the podcast.
@@ -102,7 +102,7 @@ class Manager
      *
      * @param  array $config
      */
-    function __construct(array $config)
+    public function __construct(array $config)
     {
         $this->config = $config;
 
@@ -123,9 +123,9 @@ class Manager
         $this->link = $this->getValue($data, 'link');
         $this->image = $this->getValue($data, 'image');
         $this->author = $this->getValue($data, 'author');
+        $this->categories = $this->getValue($data, 'categories');
 
         // Optional values
-        $this->category = $this->getValue($data, 'category');
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->language = $this->getValue($data, 'language');
         $this->email = $this->getValue($data, 'email');
@@ -138,11 +138,34 @@ class Manager
      * @param  mixed  $data
      * @param  string $key
      *
-     * @return string
+     * @return mixed
      */
     public function getValue($data, $key)
     {
         $value = array_get($data, $key, $this->getDefault($key));
+
+        if (is_array($value)) {
+            $escaped = [];
+
+            // Recursive method to sanitize all category input to the iTunes spec
+            function recursiveEscape($array, &$escaped)
+            {
+                foreach ($array as $key => $value) {
+                    if (is_array($value) && !empty($value)) {
+                        // If the value is an array we need to escape more categories
+                        recursiveEscape($value, $escaped[htmlentities($key)]);
+                    } else {
+                        // First level categories without any subcategories have an empty array as value
+                        $escaped[htmlentities($key)] = !is_array($value) ? htmlentities($value) : [];
+                    }
+                }
+            }
+
+            // Recursive key and value array entity method
+            recursiveEscape($value, $escaped);
+
+            return $escaped;
+        }
 
         return htmlspecialchars($value);
     }
@@ -261,9 +284,26 @@ class Manager
         $channel->appendChild($itune_owner);
 
         // Create the <itunes:category>
-        if ($this->category !== null) {
-            $category = $dom->createElement("itunes:category", $this->category);
-            $channel->appendChild($category);
+        foreach ($this->categories as $category => $subcategories) {
+            $node = $channel->appendChild($dom->createElement('itunes:category'));
+            $node->setAttribute("text", $category);
+
+            foreach ($subcategories as $subcategory => $subcategories) {
+                if(is_array($subcategories)) {
+                    $subnode = $node->appendChild($dom->createElement('itunes:category'));
+                    $subnode->setAttribute("text", $subcategory);
+
+                    foreach($subcategories as $subsubcategory) {
+                        $subsubnode = $subnode->appendChild($dom->createElement('itunes:category'));
+                        $subsubnode->setAttribute("text", $subsubcategory);
+                    }
+                } else {
+                    $subnode = $node->appendChild($dom->createElement('itunes:category'));
+                    $subnode->setAttribute("text", $subcategories);
+                }
+            }
+
+            $channel->appendChild($node);
         }
 
         // Create the <language>
