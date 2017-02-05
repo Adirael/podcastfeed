@@ -22,6 +22,7 @@ return [
         'categories' => ['main-cat-1' => [], 'main-cat-2' => ['sub-cat1', 'sub-cat-2' => ['sub-sub-cat1']]],
         'language' => 'en-us',
         'copyright' => '2016 John Doe & Family',
+        'excplicit' => 'no'
     ],
 
 ];

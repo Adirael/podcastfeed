@@ -76,6 +76,13 @@ class Media
     private $duration;
 
     /**
+     * Explicit flag of the media.
+     *
+     * @var string
+     */
+    private $explicit;
+
+    /**
      * URL to the image representing the media..
      *
      * @var string
@@ -97,6 +104,7 @@ class Media
         $this->guid = $this->getValue($data, 'guid');
         $this->type = $this->getValue($data, 'type');
         $this->duration = $this->getValue($data, 'duration');
+        $this->explicit = $this->getValue($data, 'explicit');
         $this->author = $this->getValue($data, 'author');
         $this->image = $this->getValue($data, 'image');
 
@@ -190,6 +198,10 @@ class Media
         // Create the <itunes:duration>
         $itune_duration = $dom->createElement("itunes:duration", $this->duration);
         $item->appendChild($itune_duration);
+
+        // Create the <itunes:explicit>
+        $explicit = $dom->createElement("itunes:explicit", $this->explicit);
+        $item->appendChild($explicit);
 
         // Create the <guid>
         $guid = $dom->createElement("guid", $this->guid);
