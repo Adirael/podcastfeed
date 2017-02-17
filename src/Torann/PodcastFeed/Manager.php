@@ -35,6 +35,13 @@ class Manager
     private $description;
 
     /**
+     * Summary of the podcast.
+     *
+     * @var string
+     */
+    private $summary;
+
+    /**
      * URL to the podcast website.
      *
      * @var string
@@ -134,6 +141,7 @@ class Manager
         // Required
         $this->title = $this->getValue($data, 'title');
         $this->description = $this->getValue($data, 'description');
+        $this->summary = $this->getValue($data, 'summary');
         $this->link = $this->getValue($data, 'link');
         $this->image = $this->getValue($data, 'image');
         $this->author = $this->getValue($data, 'author');
@@ -277,7 +285,7 @@ class Manager
         $channel->appendChild($description);
 
         // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->description);
+        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
         $channel->appendChild($itune_summary);
 
         // Create the <image>
