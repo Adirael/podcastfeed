@@ -76,6 +76,13 @@ class Media
     private $guid;
 
     /**
+     * GUID isPermaLink attribute
+     *
+     * @var string
+     */
+    private $isPermaLink;
+
+    /**
      * Duration of the media only as HH:MM:SS, H:MM:SS, MM:SS or M:SS.
      *
      * @var string
@@ -123,6 +130,7 @@ class Media
         $this->author = $this->getValue($data, 'author');
         $this->image = $this->getValue($data, 'image');
         $this->length = $this->getValue($data, 'length');
+        $this->isPermaLink = $this->getValue($data, 'isPermaLink');
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
@@ -188,6 +196,7 @@ class Media
 
         // Create the <itunes:summary>
         $itune_summary = $dom->createElement("itunes:summary", $this->summary);
+        $itune_summary->appendChild($dom->createCDATASection($this->summary));
         $item->appendChild($itune_summary);
 
         // Create the <pubDate>
@@ -222,6 +231,7 @@ class Media
 
         // Create the <guid>
         $guid = $dom->createElement("guid", $this->guid);
+        $guid->setAttribute("isPermaLink", $this->isPermaLink);
         $item->appendChild($guid);
 
         // Create the <itunes:image>
