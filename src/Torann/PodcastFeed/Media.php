@@ -83,11 +83,18 @@ class Media
     private $explicit;
 
     /**
-     * URL to the image representing the media..
+     * URL to the image representing the media.
      *
      * @var string
      */
     private $image;
+
+    /**
+     * Length in bytes of the media file.
+     *
+     * @var string
+     */
+    private $length;
 
     /**
      * Class constructor
@@ -107,6 +114,7 @@ class Media
         $this->explicit = $this->getValue($data, 'explicit');
         $this->author = $this->getValue($data, 'author');
         $this->image = $this->getValue($data, 'image');
+        $this->length = $this->getValue($data, 'length');
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
@@ -182,6 +190,7 @@ class Media
         $enclosure = $dom->createElement("enclosure");
         $enclosure->setAttribute("url", $this->url);
         $enclosure->setAttribute("type", $this->type);
+        $enclosure->setAttribute("length", $this->length);
         $item->appendChild($enclosure);
 
         // Create the author
