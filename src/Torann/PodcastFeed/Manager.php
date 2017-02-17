@@ -98,6 +98,13 @@ class Manager
     private $copyright = null;
 
     /**
+     * Atom link of the feed.
+     *
+     * @var string
+     */
+    private $atom_link;
+
+    /**
      * List of media for the podcast.
      *
      * @var array
@@ -131,6 +138,7 @@ class Manager
         $this->image = $this->getValue($data, 'image');
         $this->author = $this->getValue($data, 'author');
         $this->categories = $this->getValue($data, 'categories');
+        $this->atom_link = $this->getValue($data, 'atom_link');
 
         // Optional values
         $this->explicit = $this->getValue($data, 'explicit');
@@ -235,11 +243,19 @@ class Manager
         $rss = $dom->createElement("rss");
         $rss->setAttribute("xmlns:itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
         $rss->setAttribute("version", "2.0");
+        $rss->setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
         $dom->appendChild($rss);
 
         // Create the <channel>
         $channel = $dom->createElement("channel");
         $rss->appendChild($channel);
+
+        // Add atom:link for interoperability
+        $atom = $dom->createElement("atom:link");
+        $atom->setAttribute("href", $this->atom_link);
+        $atom->setAttribute("rel", "self");
+        $atom->setAttribute("type", "application/rss+xml");
+        $channel->appendChild($atom);
 
         // Create the <title>
         $title = $dom->createElement("title", $this->title);
