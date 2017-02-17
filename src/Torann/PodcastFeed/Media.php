@@ -41,6 +41,13 @@ class Media
     private $description;
 
     /**
+     * summary media.
+     *
+     * @var string
+     */
+    private $summary;
+
+    /**
      * URL of the media
      *
      * @var string
@@ -106,6 +113,7 @@ class Media
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->description = $this->getValue($data, 'description');
+        $this->summary = $this->getValue($data, 'summary');
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
         $this->guid = $this->getValue($data, 'guid');
@@ -179,7 +187,7 @@ class Media
         $item->appendChild($description);
 
         // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->description);
+        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
         $item->appendChild($itune_summary);
 
         // Create the <pubDate>
