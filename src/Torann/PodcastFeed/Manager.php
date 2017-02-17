@@ -332,6 +332,13 @@ class Manager
             $channel->appendChild($copyright);
         }
 
+        // Create the <pubDate>
+        if ($this->pubDate == null) {
+            $this->pubDate = new DateTime();
+        }
+        $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
+        $channel->appendChild($pubDate);
+
         // Create the <items>
         foreach ($this->media as $media) {
             // Addition of media in the dom
@@ -347,13 +354,6 @@ class Manager
                 }
             }
         }
-
-        // Create the <pubDate>
-        if ($this->pubDate == null) {
-            $this->pubDate = new DateTime();
-        }
-        $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
-        $channel->appendChild($pubDate);
 
         // Return the DOM
         return $dom;
