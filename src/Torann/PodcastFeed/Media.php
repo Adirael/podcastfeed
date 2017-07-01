@@ -119,7 +119,7 @@ class Media
     {
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
-        $this->description = $this->getValue($data, 'description');
+        $this->description = $this->getValue($data, 'description', null, true);
         $this->summary = $this->getValue($data, 'summary');
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
@@ -147,11 +147,15 @@ class Media
      *
      * @return string
      */
-    public function getValue($data, $key, $default = null)
+    public function getValue($data, $key, $default = null, $raw = false)
     {
         $value = array_get($data, $key, $default);
 
-        return htmlspecialchars($value);
+        if(!$raw) {
+            return htmlspecialchars($value);
+        }
+
+        return $value;
     }
 
     /**
@@ -195,7 +199,7 @@ class Media
         $item->appendChild($description);
 
         // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
+        $itune_summary = $dom->createElement("itunes:summary");
         $itune_summary->appendChild($dom->createCDATASection($this->summary));
         $item->appendChild($itune_summary);
 
