@@ -120,7 +120,7 @@ class Media
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->description = $this->getValue($data, 'description', null, true);
-        $this->summary = $this->getValue($data, 'summary');
+        $this->summary = $this->getValue($data, 'summary', null, true);
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
         $this->guid = $this->getValue($data, 'guid');
@@ -200,7 +200,6 @@ class Media
 
         // Create the <itunes:summary>
         $itune_summary = $dom->createElement("itunes:summary");
-        $itune_summary->appendChild($dom->createCDATASection($this->summary));
         $item->appendChild($itune_summary);
 
         // Create the <pubDate>
