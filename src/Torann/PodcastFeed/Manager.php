@@ -167,28 +167,10 @@ class Manager
     public function getValue($data, $key)
     {
         $value = array_get($data, $key, $this->getDefault($key));
-
-        if (is_array($value)) {
-            $escaped = [];
-
-            // Recursive method to sanitize all category input to the iTunes spec
-            function recursiveEscape($array, &$escaped)
-            {
-                foreach ($array as $key => $value) {
-                    if (is_array($value) && !empty($value)) {
-                        // If the value is an array we need to escape more categories
-                        recursiveEscape($value, $escaped[htmlentities($key)]);
-                    } else {
-                        // First level categories without any subcategories have an empty array as value
-                        $escaped[htmlentities($key)] = !is_array($value) ? htmlentities($value) : [];
-                    }
-                }
-            }
-
-            // Recursive key and value array entity method
-            recursiveEscape($value, $escaped);
-
-            return $escaped;
+        
+        // Avoid escaping categories to confort to the itunes spec
+        if($key == 'categories') {
+          return $value;
         }
 
         return htmlspecialchars($value);
