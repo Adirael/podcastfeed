@@ -199,7 +199,7 @@ class Media
         $item->appendChild($description);
 
         // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary");
+        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
         $item->appendChild($itune_summary);
 
         // Create the <pubDate>
