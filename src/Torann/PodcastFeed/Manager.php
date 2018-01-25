@@ -342,6 +342,11 @@ class Manager
         if ($this->pubDate == null) {
             $this->pubDate = new DateTime();
         }
+        
+        if (is_string($this->pubDate)) {
+            $this->pubDate = new DateTime($this->pubDate);
+        }
+        
         $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
         $channel->appendChild($pubDate);
 
