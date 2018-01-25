@@ -141,6 +141,7 @@ class Manager
         // Required
         $this->title = $this->getValue($data, 'title');
         $this->description = $this->getValue($data, 'description');
+        $this->pubDate = $this->getValue($data, 'pubDate');
         $this->summary = $this->getValue($data, 'summary');
         $this->link = $this->getValue($data, 'link');
         $this->image = $this->getValue($data, 'image');
