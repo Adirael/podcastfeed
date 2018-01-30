@@ -120,7 +120,8 @@ class Media
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->description = $this->getValue($data, 'description', null, true);
-        $this->summary = $this->getValue($data, 'summary', null, true);
+        $this->summary = $this->getValue($data, 'summary', null, false);
+        $this->link = $this->getValue($data, 'link', null, false);
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
         $this->guid = $this->getValue($data, 'guid');
@@ -193,14 +194,14 @@ class Media
             $item->appendChild($itune_subtitle);
         }
 
+        // Create the <itunes:summary>
+        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
+        $item->appendChild($itune_summary);
+
         // Create the <description>
         $description = $dom->createElement("description");
         $description->appendChild($dom->createCDATASection($this->description));
         $item->appendChild($description);
-
-        // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
-        $item->appendChild($itune_summary);
 
         // Create the <pubDate>
         $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
@@ -222,6 +223,11 @@ class Media
             // Create the <itunes:author>
             $itune_author = $dom->createElement("itunes:author", $this->author);
             $item->appendChild($itune_author);
+        }
+        if ($this->link) {
+            // Create the <link>
+            $link = $dom->createElement("link", $this->link);
+            $item->appendChild($link);
         }
 
         // Create the <itunes:duration>
