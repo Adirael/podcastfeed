@@ -140,8 +140,8 @@ class Manager
     {
         // Required
         $this->title = $this->getValue($data, 'title');
-        $this->description = $this->getValue($data, 'description');
         $this->pubDate = $this->getValue($data, 'pubDate');
+        $this->description = $this->getValue($data, 'description');
         $this->summary = $this->getValue($data, 'summary');
         $this->link = $this->getValue($data, 'link');
         $this->image = $this->getValue($data, 'image');
@@ -168,7 +168,7 @@ class Manager
     public function getValue($data, $key)
     {
         $value = array_get($data, $key, $this->getDefault($key));
-        
+
         // Avoid escaping categories to confort to the itunes spec
         if($key == 'categories') {
           return $value;
@@ -264,7 +264,7 @@ class Manager
 
         // Create the <description>
         $description = $dom->createElement("description");
-        $description->appendChild($dom->createCDATASection($this->description));
+        $description->appendChild($dom->createCDATASection('123'));
         $channel->appendChild($description);
 
         // Create the <itunes:summary>
@@ -343,13 +343,14 @@ class Manager
         if ($this->pubDate == null) {
             $this->pubDate = new DateTime();
         }
-        
         if (is_string($this->pubDate)) {
             $this->pubDate = new DateTime($this->pubDate);
         }
-        
+
         $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
         $channel->appendChild($pubDate);
+        $lastBuildDate = $dom->createElement("lastBuildDate", $this->pubDate->format(DATE_RFC2822));
+        $channel->appendChild($lastBuildDate);
 
         // Create the <items>
         foreach ($this->media as $media) {
