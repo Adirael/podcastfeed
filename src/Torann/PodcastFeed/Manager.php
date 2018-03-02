@@ -264,7 +264,7 @@ class Manager
 
         // Create the <description>
         $description = $dom->createElement("description");
-        $description->appendChild($dom->createCDATASection('123'));
+        $description->appendChild($dom->createCDATASection($this->description));
         $channel->appendChild($description);
 
         // Create the <itunes:summary>
