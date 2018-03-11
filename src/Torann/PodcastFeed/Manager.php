@@ -35,6 +35,13 @@ class Manager
     private $description;
 
     /**
+     * Summary of the podcast.
+     *
+     * @var string
+     */
+    private $summary;
+
+    /**
      * URL to the podcast website.
      *
      * @var string
@@ -56,11 +63,18 @@ class Manager
     private $author;
 
     /**
-     * Category of the podcast.
+     * Categories of the podcast.
+     *
+     * @var array
+     */
+    private $categories = [];
+
+    /**
+     * Explicit flag of the podcast.
      *
      * @var string
      */
-    private $category = null;
+    private $explicit = null;
 
     /**
      * Language of the podcast.
@@ -91,6 +105,13 @@ class Manager
     private $copyright = null;
 
     /**
+     * Atom link of the feed.
+     *
+     * @var string
+     */
+    private $atom_link;
+
+    /**
      * List of media for the podcast.
      *
      * @var array
@@ -102,7 +123,7 @@ class Manager
      *
      * @param  array $config
      */
-    function __construct(array $config)
+    public function __construct(array $config)
     {
         $this->config = $config;
 
@@ -119,13 +140,17 @@ class Manager
     {
         // Required
         $this->title = $this->getValue($data, 'title');
+        $this->pubDate = $this->getValue($data, 'pubDate');
         $this->description = $this->getValue($data, 'description');
+        $this->summary = $this->getValue($data, 'summary');
         $this->link = $this->getValue($data, 'link');
         $this->image = $this->getValue($data, 'image');
         $this->author = $this->getValue($data, 'author');
+        $this->categories = $this->getValue($data, 'categories');
+        $this->atom_link = $this->getValue($data, 'atom_link');
 
         // Optional values
-        $this->category = $this->getValue($data, 'category');
+        $this->explicit = $this->getValue($data, 'explicit');
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->language = $this->getValue($data, 'language');
         $this->email = $this->getValue($data, 'email');
@@ -138,11 +163,16 @@ class Manager
      * @param  mixed  $data
      * @param  string $key
      *
-     * @return string
+     * @return mixed
      */
     public function getValue($data, $key)
     {
         $value = array_get($data, $key, $this->getDefault($key));
+
+        // Avoid escaping categories to confort to the itunes spec
+        if($key == 'categories') {
+          return $value;
+        }
 
         return htmlspecialchars($value);
     }
@@ -204,11 +234,19 @@ class Manager
         $rss = $dom->createElement("rss");
         $rss->setAttribute("xmlns:itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
         $rss->setAttribute("version", "2.0");
+        $rss->setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
         $dom->appendChild($rss);
 
         // Create the <channel>
         $channel = $dom->createElement("channel");
         $rss->appendChild($channel);
+
+        // Add atom:link for interoperability
+        $atom = $dom->createElement("atom:link");
+        $atom->setAttribute("href", $this->atom_link);
+        $atom->setAttribute("rel", "self");
+        $atom->setAttribute("type", "application/rss+xml");
+        $channel->appendChild($atom);
 
         // Create the <title>
         $title = $dom->createElement("title", $this->title);
@@ -230,7 +268,7 @@ class Manager
         $channel->appendChild($description);
 
         // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->description);
+        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
         $channel->appendChild($itune_summary);
 
         // Create the <image>
@@ -261,9 +299,32 @@ class Manager
         $channel->appendChild($itune_owner);
 
         // Create the <itunes:category>
-        if ($this->category !== null) {
-            $category = $dom->createElement("itunes:category", $this->category);
-            $channel->appendChild($category);
+        foreach ($this->categories as $category => $subcategories) {
+            $node = $channel->appendChild($dom->createElement('itunes:category'));
+            $node->setAttribute("text", $category);
+
+            foreach ($subcategories as $subcategory => $subcategories) {
+                if(is_array($subcategories)) {
+                    $subnode = $node->appendChild($dom->createElement('itunes:category'));
+                    $subnode->setAttribute("text", $subcategory);
+
+                    foreach($subcategories as $subsubcategory) {
+                        $subsubnode = $subnode->appendChild($dom->createElement('itunes:category'));
+                        $subsubnode->setAttribute("text", $subsubcategory);
+                    }
+                } else {
+                    $subnode = $node->appendChild($dom->createElement('itunes:category'));
+                    $subnode->setAttribute("text", $subcategories);
+                }
+            }
+
+            $channel->appendChild($node);
+        }
+
+        // Create the <itunes:explicit>
+        if ($this->explicit !== null) {
+            $explicit = $dom->createElement("itunes:explicit", $this->explicit);
+            $channel->appendChild($explicit);
         }
 
         // Create the <language>
@@ -277,6 +338,19 @@ class Manager
             $copyright = $dom->createElement("copyright", $this->copyright);
             $channel->appendChild($copyright);
         }
+
+        // Create the <pubDate>
+        if ($this->pubDate == null) {
+            $this->pubDate = new DateTime();
+        }
+        if (is_string($this->pubDate)) {
+            $this->pubDate = new DateTime($this->pubDate);
+        }
+
+        $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
+        $channel->appendChild($pubDate);
+        $lastBuildDate = $dom->createElement("lastBuildDate", $this->pubDate->format(DATE_RFC2822));
+        $channel->appendChild($lastBuildDate);
 
         // Create the <items>
         foreach ($this->media as $media) {
@@ -293,13 +367,6 @@ class Manager
                 }
             }
         }
-
-        // Create the <pubDate>
-        if ($this->pubDate == null) {
-            $this->pubDate = new DateTime();
-        }
-        $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
-        $channel->appendChild($pubDate);
 
         // Return the DOM
         return $dom;
