@@ -148,6 +148,7 @@ class Manager
         $this->author = $this->getValue($data, 'author');
         $this->categories = $this->getValue($data, 'categories');
         $this->atom_link = $this->getValue($data, 'atom_link');
+        $this->main_country = $this->getValue($data, 'main_country');
 
         // Optional values
         $this->explicit = $this->getValue($data, 'explicit');
@@ -235,6 +236,8 @@ class Manager
         $rss->setAttribute("xmlns:itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
         $rss->setAttribute("version", "2.0");
         $rss->setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
+        $rss->setAttribute("xmlns:spotify","http://www.spotify.com/ns/rss");
+        $rss->setAttribute("xmlns:content","http://purl.org/rss/1.0/modules/content/");
         $dom->appendChild($rss);
 
         // Create the <channel>
@@ -321,11 +324,17 @@ class Manager
             $channel->appendChild($node);
         }
 
-        // Create the <itunes:explicit>
-        if ($this->explicit !== null) {
-            $explicit = $dom->createElement("itunes:explicit", $this->explicit);
-            $channel->appendChild($explicit);
-        }
+        $explicit = $dom->createElement("itunes:explicit", (is_null($this->explicit) OR !$this->explicit OR empty($this->explicit) OR $this->explicit == 'no') ? 'clean' : 'yes');
+        $channel->appendChild($explicit);
+
+        $spotify_limit = $dom->createElement("spotify:limit");
+        $spotify_limit->setAttribute("recentCount", "10");
+        $channel->appendChild($spotify_limit);
+
+        $countries = array('ar','cl','co','es','mx','pe','us');
+        foreach($countries as $k => $v) { if($v == strtolower($this->main_country)) unset($countries[$k]); }
+        $spotify_country = $dom->createElement("spotify:countryOfOrigin",strtolower($this->main_country).' '.implode(' ',$countries));
+        $channel->appendChild($spotify_country);
 
         // Create the <language>
         if ($this->language !== null) {

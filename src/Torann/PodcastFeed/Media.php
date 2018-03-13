@@ -41,6 +41,13 @@ class Media
     private $description;
 
     /**
+     * summary media.
+     *
+     * @var string
+     */
+    private $summary;
+
+    /**
      * URL of the media
      *
      * @var string
@@ -69,6 +76,13 @@ class Media
     private $guid;
 
     /**
+     * GUID isPermaLink attribute
+     *
+     * @var string
+     */
+    private $isPermaLink;
+
+    /**
      * Duration of the media only as HH:MM:SS, H:MM:SS, MM:SS or M:SS.
      *
      * @var string
@@ -76,11 +90,25 @@ class Media
     private $duration;
 
     /**
-     * URL to the image representing the media..
+     * Explicit flag of the media.
+     *
+     * @var string
+     */
+    private $explicit;
+
+    /**
+     * URL to the image representing the media.
      *
      * @var string
      */
     private $image;
+
+    /**
+     * Length in bytes of the media file.
+     *
+     * @var string
+     */
+    private $length;
 
     /**
      * Class constructor
@@ -91,14 +119,19 @@ class Media
     {
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
-        $this->description = $this->getValue($data, 'description');
+        $this->description = $this->getValue($data, 'description', null, true);
+        $this->summary = $this->getValue($data, 'summary', null, false);
+        $this->link = $this->getValue($data, 'link', null, false);
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
         $this->guid = $this->getValue($data, 'guid');
         $this->type = $this->getValue($data, 'type');
         $this->duration = $this->getValue($data, 'duration');
+        $this->explicit = $this->getValue($data, 'explicit');
         $this->author = $this->getValue($data, 'author');
         $this->image = $this->getValue($data, 'image');
+        $this->length = $this->getValue($data, 'length');
+        $this->isPermaLink = $this->getValue($data, 'isPermaLink');
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
@@ -115,11 +148,15 @@ class Media
      *
      * @return string
      */
-    public function getValue($data, $key, $default = null)
+    public function getValue($data, $key, $default = null, $raw = false)
     {
         $value = array_get($data, $key, $default);
 
-        return htmlspecialchars($value);
+        if(!$raw) {
+            return htmlspecialchars($value);
+        }
+
+        return $value;
     }
 
     /**
@@ -157,14 +194,26 @@ class Media
             $item->appendChild($itune_subtitle);
         }
 
+        // Create the <itunes:summary>
+        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
+        $item->appendChild($itune_summary);
+
         // Create the <description>
-        $description = $dom->createElement("description");
-        $description->appendChild($dom->createCDATASection($this->description));
+
+        // DESCRIPTION CON HTML
+
+        // $description = $dom->createElement("description");
+        // $description->appendChild($dom->createCDATASection($this->description));
+        // $item->appendChild($description);
+
+
+        // DESCRIPTION CON SUMARIO
+        $description = $dom->createElement("description", $this->summary);
         $item->appendChild($description);
 
-        // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->description);
-        $item->appendChild($itune_summary);
+        $content_encoded = $dom->createElement("content:encoded");
+        $content_encoded->appendChild($dom->createCDATASection($this->description));
+        $item->appendChild($content_encoded);
 
         // Create the <pubDate>
         $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
@@ -174,6 +223,7 @@ class Media
         $enclosure = $dom->createElement("enclosure");
         $enclosure->setAttribute("url", $this->url);
         $enclosure->setAttribute("type", $this->type);
+        $enclosure->setAttribute("length", $this->length);
         $item->appendChild($enclosure);
 
         // Create the author
@@ -186,13 +236,23 @@ class Media
             $itune_author = $dom->createElement("itunes:author", $this->author);
             $item->appendChild($itune_author);
         }
+        if ($this->link) {
+            // Create the <link>
+            $link = $dom->createElement("link", $this->link);
+            $item->appendChild($link);
+        }
 
         // Create the <itunes:duration>
         $itune_duration = $dom->createElement("itunes:duration", $this->duration);
         $item->appendChild($itune_duration);
 
+        // Create the <itunes:explicit>
+        $explicit = $dom->createElement("itunes:explicit", (is_null($this->explicit) OR !$this->explicit OR empty($this->explicit) OR $this->explicit == 'no') ? 'clean' : 'yes');
+        $item->appendChild($explicit);
+
         // Create the <guid>
         $guid = $dom->createElement("guid", $this->guid);
+        $guid->setAttribute("isPermaLink", $this->isPermaLink);
         $item->appendChild($guid);
 
         // Create the <itunes:image>
