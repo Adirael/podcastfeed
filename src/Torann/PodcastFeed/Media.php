@@ -119,9 +119,9 @@ class Media
     {
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
+        $this->summary = $this->getValue($data, 'summary', null, false);
         $this->description = $this->getValue($data, 'description', null, true);
         $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
-        $this->summary = $this->getValue($data, 'summary', null, false);
         $this->link = $this->getValue($data, 'link', null, false);
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
@@ -217,7 +217,6 @@ class Media
         // TRADICIONAL
         if(empty($this->content_encoded)) {
 
-
           // Create the <itunes:subtitle>
           if ($this->subtitle) {
               $itune_subtitle = $dom->createElement("itunes:subtitle", $this->subtitle);
@@ -236,10 +235,10 @@ class Media
         } else {
 
           // Create the <itunes:summary>
-          $itune_summary = $dom->createElement("itunes:summary", $this->description);
+          $itune_summary = $dom->createElement("itunes:summary", $this->summary);
           $item->appendChild($itune_summary);
 
-          $description = $dom->createElement("description", $this->description);
+          $description = $dom->createElement("description", $this->summary);
           $item->appendChild($description);
 
           $content_encoded = $dom->createElement("content:encoded");
