@@ -218,7 +218,6 @@ class Media
 
         // TRADICIONAL
         if(empty($this->content_encoded)) {
-
           // Create the <itunes:subtitle>
           if ($this->subtitle) {
               $itune_subtitle = $dom->createElement("itunes:subtitle", $this->subtitle);
@@ -229,9 +228,13 @@ class Media
           $itune_summary = $dom->createElement("itunes:summary", $this->summary);
           $item->appendChild($itune_summary);
 
-          $description = $dom->createElement("description");
-          $description->appendChild($dom->createCDATASection($this->description));
-          $item->appendChild($description);
+          // $description = $dom->createElement("description");
+          // $description->appendChild($dom->createCDATASection($this->description));
+          // $item->appendChild($description);
+
+          $content_encoded = $dom->createElement("content:encoded");
+          $content_encoded->appendChild($dom->createCDATASection($this->content_encoded));
+          $item->appendChild($content_encoded);
 
           // SPOTIFY
         } else {

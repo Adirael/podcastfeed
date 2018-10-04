@@ -149,6 +149,7 @@ class Manager
         $this->author = $this->getValue($data, 'author');
         $this->categories = $this->getValue($data, 'categories');
         $this->atom_link = $this->getValue($data, 'atom_link');
+        $this->main_country = $this->getValue($data, 'main_country');
 
         // Optional values
         $this->explicit = $this->getValue($data, 'explicit');
@@ -272,6 +273,22 @@ class Manager
         // Create the <link>
         $link = $dom->createElement("link", $this->link);
         $channel->appendChild($link);
+
+        $spotify_limit = $dom->createElement("spotify:limit");
+        $spotify_limit->setAttribute("recentCount", "10");
+        $channel->appendChild($spotify_limit);
+
+        $countries = array('ar','cl','co','es','mx','pe','us');
+        foreach($countries as $k => $v) {
+            if($v == strtolower($this->main_country)) {
+                unset($countries[$k]);
+            }
+        }
+        $spotify_country = $dom->createElement(
+            "spotify:countryOfOrigin",
+            strtolower($this->main_country).' '.implode(' ',$countries)
+        );
+        $channel->appendChild($spotify_country);
 
         // Create the <description>
         $description = $dom->createElement("description");
