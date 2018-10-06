@@ -130,6 +130,8 @@ class Media
         $this->duration = $this->getValue($data, 'duration');
         $this->explicit = $this->getValue($data, 'explicit');
         $this->author = $this->getValue($data, 'author');
+        $this->feed_season = $this->getValue($data, 'feed_season');
+        $this->feed_episode = $this->getValue($data, 'feed_episode');
         $this->image = $this->getValue($data, 'image');
         $this->length = $this->getValue($data, 'length');
         $this->isPermaLink = $this->getValue($data, 'isPermaLink');
@@ -216,7 +218,6 @@ class Media
 
         // TRADICIONAL
         if(empty($this->content_encoded)) {
-
           // Create the <itunes:subtitle>
           if ($this->subtitle) {
               $itune_subtitle = $dom->createElement("itunes:subtitle", $this->subtitle);
@@ -227,9 +228,13 @@ class Media
           $itune_summary = $dom->createElement("itunes:summary", $this->summary);
           $item->appendChild($itune_summary);
 
-          $description = $dom->createElement("description");
-          $description->appendChild($dom->createCDATASection($this->description));
-          $item->appendChild($description);
+          // $description = $dom->createElement("description");
+          // $description->appendChild($dom->createCDATASection($this->description));
+          // $item->appendChild($description);
+
+          $content_encoded = $dom->createElement("content:encoded");
+          $content_encoded->appendChild($dom->createCDATASection($this->content_encoded));
+          $item->appendChild($content_encoded);
 
           // SPOTIFY
         } else {
@@ -271,6 +276,16 @@ class Media
             // Create the <link>
             $link = $dom->createElement("link", $this->link);
             $item->appendChild($link);
+        }
+
+        if ($this->feed_season > 0) {
+            $feed_season = $dom->createElement("itunes:season", intval($this->feed_season));
+            $item->appendChild($feed_season);
+        }
+
+        if ($this->feed_episode > 0) {
+            $feed_episode = $dom->createElement("itunes:episode", intval($this->feed_episode));
+            $item->appendChild($feed_episode);
         }
 
         // Create the <itunes:duration>
