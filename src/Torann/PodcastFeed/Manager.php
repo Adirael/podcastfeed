@@ -237,6 +237,7 @@ class Manager
         $rss->setAttribute("xmlns:itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
         $rss->setAttribute("version", "2.0");
         $rss->setAttribute("xmlns:content","http://purl.org/rss/1.0/modules/content/");
+        $rss->setAttribute("xmlns:googleplay","hhttp://www.google.com/schemas/play-podcasts/1.0");
         $rss->setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
         $rss->setAttribute("xmlns:spotify","http://www.spotify.com/ns/rss");
         $dom->appendChild($rss);
