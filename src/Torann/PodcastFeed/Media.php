@@ -121,7 +121,7 @@ class Media
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->summary = $this->getValue($data, 'summary', null, false);
         $this->description = $this->getValue($data, 'description', null, true);
-        $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
+        $this->content_encoded = $this->getValue($data, 'description', null, true);
         $this->link = $this->getValue($data, 'link', null, false);
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
@@ -216,28 +216,8 @@ class Media
         // $description->appendChild($dom->createCDATASection($this->description));
         // $item->appendChild($description);
 
-        // TRADICIONAL
+        // SPOTIFY
         if(empty($this->content_encoded)) {
-          // Create the <itunes:subtitle>
-          if ($this->subtitle) {
-              $itune_subtitle = $dom->createElement("itunes:subtitle", $this->subtitle);
-              $item->appendChild($itune_subtitle);
-          }
-
-          // Create the <itunes:summary>
-          $itune_summary = $dom->createElement("itunes:summary", $this->summary);
-          $item->appendChild($itune_summary);
-
-          // $description = $dom->createElement("description");
-          // $description->appendChild($dom->createCDATASection($this->description));
-          // $item->appendChild($description);
-
-          $content_encoded = $dom->createElement("content:encoded");
-          $content_encoded->appendChild($dom->createCDATASection($this->content_encoded));
-          $item->appendChild($content_encoded);
-
-          // SPOTIFY
-        } else {
 
           // Create the <itunes:summary>
           $itune_summary = $dom->createElement("itunes:summary", $this->summary);
@@ -246,8 +226,24 @@ class Media
           $description = $dom->createElement("description", $this->summary);
           $item->appendChild($description);
 
+          // FEED TRADICIONAL
+        } else {
+          // Create the <itunes:subtitle>
+          if (!empty($this->subtitle)) {
+              $itune_subtitle = $dom->createElement("itunes:subtitle", $this->subtitle);
+              $item->appendChild($itune_subtitle);
+          }
+
+          // Create the <itunes:summary>
+          $itune_summary = $dom->createElement("itunes:summary", $this->summary);
+          $item->appendChild($itune_summary);
+
+          $description = $dom->createElement("description");
+          $description->appendChild($dom->createCDATASection($this->description));
+          $item->appendChild($description);
+
           $content_encoded = $dom->createElement("content:encoded");
-          $content_encoded->appendChild($dom->createCDATASection($this->content_encoded));
+          $content_encoded->appendChild($dom->createCDATASection($this->description));
           $item->appendChild($content_encoded);
         }
 
