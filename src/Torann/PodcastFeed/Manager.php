@@ -275,7 +275,7 @@ class Manager
         $channel->appendChild($link);
 
         $spotify_limit = $dom->createElement("spotify:limit");
-        $spotify_limit->setAttribute("recentCount", "10");
+        $spotify_limit->setAttribute("recentCount", "200");
         $channel->appendChild($spotify_limit);
 
         $countries = array('ar','cl','co','es','mx','pe','us');
