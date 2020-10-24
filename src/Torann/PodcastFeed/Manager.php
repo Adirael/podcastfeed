@@ -63,6 +63,13 @@ class Manager
     private $author;
 
     /**
+     * Block the podcast from indexing
+     *
+     * @var bool
+     */
+    private $block;
+
+    /**
      * Categories of the podcast.
      *
      * @var array
@@ -152,10 +159,11 @@ class Manager
         $this->main_country = $this->getValue($data, 'main_country');
 
         // Optional values
-        $this->explicit = $this->getValue($data, 'explicit');
-        $this->subtitle = $this->getValue($data, 'subtitle');
-        $this->language = $this->getValue($data, 'language');
-        $this->email = $this->getValue($data, 'email');
+        $this->block     = $this->getValue($data, 'block');
+        $this->explicit  = $this->getValue($data, 'explicit');
+        $this->subtitle  = $this->getValue($data, 'subtitle');
+        $this->language  = $this->getValue($data, 'language');
+        $this->email     = $this->getValue($data, 'email');
         $this->copyright = $this->getValue($data, 'copyright');
     }
 
@@ -237,9 +245,9 @@ class Manager
         $rss->setAttribute("xmlns:itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
         $rss->setAttribute("version", "2.0");
         $rss->setAttribute("xmlns:content","http://purl.org/rss/1.0/modules/content/");
-        $rss->setAttribute("xmlns:googleplay","https://www.google.com/schemas/play-podcasts/1.0/play-podcasts.xsd");
+        $rss->setAttribute("xmlns:googleplay","http://www.google.com/schemas/play-podcasts/1.0");
         $rss->setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
-        // $rss->setAttribute("xmlns:spotify","http://www.spotify.com/ns/rss");
+        $rss->setAttribute("xmlns:spotify","http://www.spotify.com/ns/rss");
         $dom->appendChild($rss);
 
         // Create the <channel>
@@ -316,6 +324,12 @@ class Manager
         // Create the <itunes:author>
         $itune_author = $dom->createElement("itunes:author", $this->author);
         $channel->appendChild($itune_author);
+
+        // Create the <itunes:block>
+        if ($this->block) {
+            $itune_block = $dom->createElement("itunes:block", "Yes");
+            $channel->appendChild($itune_block);
+        }
 
         // Create the <itunes:owner>
         $itune_owner = $dom->createElement("itunes:owner");
