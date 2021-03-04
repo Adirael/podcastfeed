@@ -121,7 +121,7 @@ class Media
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->summary = $this->getValue($data, 'summary', null, false);
         $this->description = strip_tags($this->getValue($data, 'description', null, true));
-        $this->content_encoded = $this->getValue($data, 'description', null, true);
+        $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
         $this->link = $this->getValue($data, 'link', null, false);
         $this->pubDate = $this->getValue($data, 'publish_at');
         $this->url = $this->getValue($data, 'url');
@@ -193,8 +193,8 @@ class Media
 
         // Create the <description>
 
-        // // PARA SPOTIFY
-        // // DESCRIPTION CON HTML
+        // // FOR SPOTIFY
+        // // DESCRIPTION WITHOUT HTML
         //
         // // $description = $dom->createElement("description");
         // // $description->appendChild($dom->createCDATASection($this->description));
@@ -217,6 +217,8 @@ class Media
         // $item->appendChild($description);
 
         // SPOTIFY
+        /*
+        
         if(empty($this->content_encoded)) {
 
           // Create the <itunes:summary>
@@ -246,7 +248,21 @@ class Media
           $content_encoded->appendChild($dom->createCDATASection($this->description));
           $item->appendChild($content_encoded);
         }
+        
+        */
+     
+        if(!empty($this->description)) {
+          $description = $dom->createElement("description");
+          $description->appendChild($dom->createCDATASection($this->description));
+          $item->appendChild($description);
+        }
 
+        if(!empty($this->content_encoded)) {
+          $content_encoded = $dom->createElement("content:encoded");
+          $content_encoded->appendChild($dom->createCDATASection($this->content_encoded));
+          $item->appendChild($content_encoded);
+        }
+ 
         // Create the <pubDate>
         $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
         $item->appendChild($pubDate);
