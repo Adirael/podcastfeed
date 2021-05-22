@@ -117,29 +117,29 @@ class Media
      */
     public function __construct($data)
     {
-        $this->title = $this->getValue($data, 'title');
-        $this->subtitle = $this->getValue($data, 'subtitle');
-        $this->summary = $this->getValue($data, 'summary', null, false);
+        $this->title        = $this->getValue($data, 'title');
+        $this->subtitle     = $this->getValue($data, 'subtitle');
+        $this->summary      = $this->getValue($data, 'summary', null, false);
+        $this->description  = $this->getValue($data, 'description', null, true);
         // $this->description = strip_tags($this->getValue($data, 'description', null, true));
-        $this->description = $this->getValue($data, 'description', null, true);
-        $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
-        $this->link = $this->getValue($data, 'link', null, false);
-        $this->pubDate = $this->getValue($data, 'publish_at');
-        $this->url = $this->getValue($data, 'url');
-        $this->guid = $this->getValue($data, 'guid');
-        $this->type = $this->getValue($data, 'type');
-        $this->duration = $this->getValue($data, 'duration');
-        $this->explicit = $this->getValue($data, 'explicit');
-        $this->author = $this->getValue($data, 'author');
-        $this->feed_season = $this->getValue($data, 'feed_season');
+        // $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
+        $this->link         = $this->getValue($data, 'link', null, false);
+        $this->pubDate      = $this->getValue($data, 'publish_at');
+        $this->url          = $this->getValue($data, 'url');
+        $this->guid         = $this->getValue($data, 'guid');
+        $this->type         = $this->getValue($data, 'type');
+        $this->duration     = $this->getValue($data, 'duration');
+        $this->explicit     = $this->getValue($data, 'explicit');
+        $this->author       = $this->getValue($data, 'author');
+        $this->feed_season  = $this->getValue($data, 'feed_season');
         $this->feed_episode = $this->getValue($data, 'feed_episode');
-        $this->image = $this->getValue($data, 'image');
-        $this->length = $this->getValue($data, 'length');
-        $this->isPermaLink = $this->getValue($data, 'isPermaLink');
+        $this->image        = $this->getValue($data, 'image');
+        $this->length       = $this->getValue($data, 'length');
+        $this->isPermaLink  = $this->getValue($data, 'isPermaLink');
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
-            $this->pubDate = new DateTime($this->pubDate);
+            $this->pubDate  = new DateTime($this->pubDate);
         }
     }
 
@@ -191,66 +191,6 @@ class Media
         // Create the <title>
         $title = $dom->createElement("title", $this->title);
         $item->appendChild($title);
-
-        // Create the <description>
-
-        // // FOR SPOTIFY
-        // // DESCRIPTION WITHOUT HTML
-        //
-        // // $description = $dom->createElement("description");
-        // // $description->appendChild($dom->createCDATASection($this->description));
-        // // $item->appendChild($description);
-        //
-        //
-        // // DESCRIPTION CON SUMARIO
-        // $description = $dom->createElement("description", $this->summary);
-        // $item->appendChild($description);
-        //
-        // $content_encoded = $dom->createElement("content:encoded");
-        // $content_encoded->appendChild($dom->createCDATASection($this->description));
-        // $item->appendChild($content_encoded);
-
-        // PARA SPOTIFY
-        // DESCRIPTION CON HTML
-
-        // $description = $dom->createElement("description");
-        // $description->appendChild($dom->createCDATASection($this->description));
-        // $item->appendChild($description);
-
-        // SPOTIFY
-        /*
-        
-        if(empty($this->content_encoded)) {
-
-          // Create the <itunes:summary>
-          $itune_summary = $dom->createElement("itunes:summary", $this->summary);
-          $item->appendChild($itune_summary);
-
-          $description = $dom->createElement("description", $this->summary);
-          $item->appendChild($description);
-
-          // FEED TRADICIONAL
-        } else {
-          // Create the <itunes:subtitle>
-          if (!empty($this->subtitle)) {
-              $itune_subtitle = $dom->createElement("itunes:subtitle", $this->subtitle);
-              $item->appendChild($itune_subtitle);
-          }
-
-          // Create the <itunes:summary>
-          $itune_summary = $dom->createElement("itunes:summary", $this->summary);
-          $item->appendChild($itune_summary);
-
-          $description = $dom->createElement("description");
-          $description->appendChild($dom->createCDATASection($this->description));
-          $item->appendChild($description);
-
-          $content_encoded = $dom->createElement("content:encoded");
-          $content_encoded->appendChild($dom->createCDATASection($this->description));
-          $item->appendChild($content_encoded);
-        }
-        
-        */
      
         if(!empty($this->description)) {
           $description = $dom->createElement("description");
