@@ -146,16 +146,17 @@ class Manager
     public function setHeader($data)
     {
         // Required
-        $this->title = $this->getValue($data, 'title');
-        $this->pubDate = $this->getValue($data, 'pubDate');
-        $this->feed_type = $this->getValue($data, 'feed_type');
-        $this->description = $this->getValue($data, 'description');
-        $this->summary = $this->getValue($data, 'summary');
-        $this->link = $this->getValue($data, 'link');
-        $this->image = $this->getValue($data, 'image');
-        $this->author = $this->getValue($data, 'author');
-        $this->categories = $this->getValue($data, 'categories');
-        $this->atom_link = $this->getValue($data, 'atom_link');
+        $this->title        = $this->getValue($data, 'title');
+        $this->pubDate      = $this->getValue($data, 'pubDate');
+        $this->feed_type    = $this->getValue($data, 'feed_type');
+        $this->description  = $this->getValue($data, 'description');
+        $this->summary      = $this->getValue($data, 'summary');
+        $this->link         = $this->getValue($data, 'link');
+        $this->image        = $this->getValue($data, 'image');
+        $this->author       = $this->getValue($data, 'author');
+        $this->categories   = $this->getValue($data, 'categories');
+        $this->atom_link    = $this->getValue($data, 'atom_link');
+        $this->limit        = $this->getValue($data, 'limit');
         $this->main_country = $this->getValue($data, 'main_country');
 
         // Optional values
@@ -283,21 +284,25 @@ class Manager
         $link = $dom->createElement("link", $this->link);
         $channel->appendChild($link);
 
-        $spotify_limit = $dom->createElement("spotify:limit");
-        $spotify_limit->setAttribute("recentCount", "200");
-        $channel->appendChild($spotify_limit);
-
-        $countries = array('ar','cl','co','es','mx','pe','us');
-        foreach($countries as $k => $v) {
-            if($v == strtolower($this->main_country)) {
-                unset($countries[$k]);
-            }
+        if(!empty($this->limit)) {
+            $spotify_limit = $dom->createElement("spotify:limit");
+            $spotify_limit->setAttribute("recentCount", "200");
+            $channel->appendChild($spotify_limit);
         }
-        $spotify_country = $dom->createElement(
-            "spotify:countryOfOrigin",
-            strtolower($this->main_country).' '.implode(' ',$countries)
-        );
-        $channel->appendChild($spotify_country);
+
+        if(!empty($this->main_country)) {
+            $countries = array('ar','cl','co','es','mx','pe','us');
+            foreach($countries as $k => $v) {
+                if($v == strtolower($this->main_country)) {
+                    unset($countries[$k]);
+                }
+            }
+            $spotify_country = $dom->createElement(
+                "spotify:countryOfOrigin",
+                strtolower($this->main_country).' '.implode(' ',$countries)
+            );
+            $channel->appendChild($spotify_country);
+        }
 
         // Create the <description>
         $description = $dom->createElement("description");
