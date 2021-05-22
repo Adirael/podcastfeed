@@ -120,7 +120,8 @@ class Media
         $this->title = $this->getValue($data, 'title');
         $this->subtitle = $this->getValue($data, 'subtitle');
         $this->summary = $this->getValue($data, 'summary', null, false);
-        $this->description = strip_tags($this->getValue($data, 'description', null, true));
+        // $this->description = strip_tags($this->getValue($data, 'description', null, true));
+        $this->description = $this->getValue($data, 'description', null, true);
         $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
         $this->link = $this->getValue($data, 'link', null, false);
         $this->pubDate = $this->getValue($data, 'publish_at');
