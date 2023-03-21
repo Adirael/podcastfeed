@@ -192,6 +192,10 @@ class Manager
     {
         $value = array_get($data, $key, $default);
 
+        if($key == 'categories') {
+          return $value;
+        }
+
         if(!$raw) {
             return htmlspecialchars($value);
         }
