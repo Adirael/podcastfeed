@@ -149,7 +149,7 @@ class Manager
         $this->title        = $this->getValue($data, 'title');
         $this->pubDate      = $this->getValue($data, 'pubDate');
         $this->feed_type    = $this->getValue($data, 'feed_type');
-        $this->description  = $this->getValue($data, 'description');
+        $this->description  = $this->getValue($data, 'description',null,true);
         $this->summary      = $this->getValue($data, 'summary');
         $this->link         = $this->getValue($data, 'link');
         $this->image        = $this->getValue($data, 'image');
@@ -175,7 +175,6 @@ class Manager
      * @param  string $key
      *
      * @return mixed
-     */
     public function getValue($data, $key)
     {
         $value = array_get($data, $key, $this->getDefault($key));
@@ -186,6 +185,18 @@ class Manager
         }
 
         return htmlspecialchars($value);
+    }
+     */
+    
+    public function getValue($data, $key, $default = null, $raw = false)
+    {
+        $value = array_get($data, $key, $default);
+
+        if(!$raw) {
+            return htmlspecialchars($value);
+        }
+
+        return $value;
     }
 
     /**
