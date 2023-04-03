@@ -453,4 +453,3 @@ class Manager
         return $dom;
     }
 }
-a
