@@ -151,11 +151,11 @@ class Manager
         $this->feed_type    = $this->getValue($data, 'feed_type');
         $this->description  = $this->getValue($data, 'description',null,true);
         $this->summary      = $this->getValue($data, 'summary');
-        $this->link         = $this->getValue($data, 'link');
         $this->image        = $this->getValue($data, 'image');
         $this->author       = $this->getValue($data, 'author');
         $this->categories   = $this->getValue($data, 'categories');
         $this->atom_link    = $this->getValue($data, 'atom_link');
+        $this->links        = $this->getValue($data, 'links');
         $this->limit        = $this->getValue($data, 'limit');
         $this->main_country = $this->getValue($data, 'main_country');
 
@@ -192,7 +192,7 @@ class Manager
     {
         $value = array_get($data, $key, $default);
 
-        if($key == 'categories') {
+        if($key == 'categories' OR $key == 'links') {
           return $value;
         }
 
@@ -269,13 +269,31 @@ class Manager
         // Create the <channel>
         $channel = $dom->createElement("channel");
         $rss->appendChild($channel);
+        
+        if(is_array($this->links) && count($this->links) > 0) {
+            foreach($this->links as $l) {
+                $atom = $dom->createElement("link",isset($l['value']) ? $l['value'] : '');
+                if(isset($l['href'])) {
+                    $atom->setAttribute("href", $l['href']);
+                }
+                if(isset($l['type'])) {
+                    $atom->setAttribute("href", $l['type']);
+                }
+                if(isset($l['rel'])) {
+                    $atom->setAttribute("rel", $l['rel']);
+                }
+                $channel->appendChild($atom);
+            }
+        }
 
         // Add atom:link for interoperability
-        $atom = $dom->createElement("atom:link");
-        $atom->setAttribute("href", $this->atom_link);
-        $atom->setAttribute("rel", "self");
-        $atom->setAttribute("type", "application/rss+xml");
-        $channel->appendChild($atom);
+        if(!empty($this->atom_link)) {
+            $atom = $dom->createElement("atom:link");
+            $atom->setAttribute("href", $this->atom_link);
+            $atom->setAttribute("rel", "self");
+            $atom->setAttribute("type", "application/rss+xml");
+            $channel->appendChild($atom);
+        }
 
         // Create the <title>
         $title = $dom->createElement("title", $this->title);
