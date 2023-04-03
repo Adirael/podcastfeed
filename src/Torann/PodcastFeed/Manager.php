@@ -284,7 +284,7 @@ class Manager
                 }
                 $channel->appendChild($atom);
             }
-        } else {
+        } elseif(isset($this->link)) {
             // Create the <link>
             $link = $dom->createElement("link", $this->link);
             $channel->appendChild($link);
@@ -349,7 +349,7 @@ class Manager
         // Create the <image>
         $image = $dom->createElement("image");
         $image->appendChild($title->cloneNode(true));
-        $image->appendChild($link->cloneNode(true));
+        // $image->appendChild($link->cloneNode(true));
         $channel->appendChild($image);
         $image_url = $dom->createElement("url", $this->image);
         $image->appendChild($image_url);
@@ -453,3 +453,4 @@ class Manager
         return $dom;
     }
 }
+a
