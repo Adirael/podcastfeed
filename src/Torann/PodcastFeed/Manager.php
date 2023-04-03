@@ -284,6 +284,10 @@ class Manager
                 }
                 $channel->appendChild($atom);
             }
+        } else {
+            // Create the <link>
+            $link = $dom->createElement("link", $this->link);
+            $channel->appendChild($link);
         }
 
         // Add atom:link for interoperability
@@ -312,10 +316,6 @@ class Manager
             $itune_type = $dom->createElement("itunes:type", $this->feed_type);
             $channel->appendChild($itune_type);
         }
-
-        // Create the <link>
-        $link = $dom->createElement("link", $this->link);
-        $channel->appendChild($link);
 
         if(!empty($this->limit)) {
             $spotify_limit = $dom->createElement("spotify:limit");
