@@ -240,14 +240,14 @@ class Media
         
         
 
-        if (isset($this->transcription)) {
+        if ($this->transcription) {
             $transcription = $dom->createElement("podcast:transcript");
             $transcription->setAttribute("type","plain/txt");
             $transcription->setAttribute("url",$this->transcription);
             $item->appendChild($transcription);
         }
        
-        if (isset($this->subtitles > 0)) {
+        if ($this->subtitles) {
             $subtitles = $dom->createElement("podcast:transcript");
             $subtitles->setAttribute("type","application/x-subrip");
             $subtitles->setAttribute("rel","captions");
