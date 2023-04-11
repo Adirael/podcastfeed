@@ -136,6 +136,8 @@ class Media
         $this->image        = $this->getValue($data, 'image');
         $this->length       = $this->getValue($data, 'length');
         $this->isPermaLink  = $this->getValue($data, 'isPermaLink');
+        $this->transcription= $this->getValue($data, 'transcription');
+        $this->subtitles    = $this->getValue($data, 'subtitles');
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
@@ -234,6 +236,23 @@ class Media
         if ($this->feed_season > 0) {
             $feed_season = $dom->createElement("itunes:season", intval($this->feed_season));
             $item->appendChild($feed_season);
+        }
+        
+        
+
+        if ($this->transcription > 0) {
+            $transcription = $dom->createElement("podcast:transcript");
+            $transcription->setAttribute("type","plain/txt");
+            $transcription->setAttribute("url",$this->transcription);
+            $item->appendChild($transcription);
+        }
+       
+        if ($this->subtitles > 0) {
+            $subtitles = $dom->createElement("podcast:transcript");
+            $subtitles->setAttribute("type","application/x-subrip");
+            $subtitles->setAttribute("rel","captions");
+            $subtitles->setAttribute("url",$this->subtitles);
+            $item->appendChild($subtitles);
         }
 
         if ($this->feed_episode > 0) {
