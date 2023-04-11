@@ -264,6 +264,7 @@ class Manager
         $rss->setAttribute("xmlns:googleplay","http://www.google.com/schemas/play-podcasts/1.0");
         $rss->setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
         $rss->setAttribute("xmlns:spotify","http://www.spotify.com/ns/rss");
+        $rss->setAttribute("xmlns:podcast","https://podcastindex.org/namespace/1.0");
         $dom->appendChild($rss);
 
         // Create the <channel>
