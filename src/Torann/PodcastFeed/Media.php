@@ -138,6 +138,7 @@ class Media
         $this->isPermaLink  = $this->getValue($data, 'isPermaLink');
         $this->transcription= $this->getValue($data, 'transcription');
         $this->subtitles    = $this->getValue($data, 'subtitles');
+        $this->chapters     = $this->getValue($data, 'chapters');
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
@@ -253,6 +254,13 @@ class Media
             $subtitles->setAttribute("rel","captions");
             $subtitles->setAttribute("url",$this->subtitles);
             $item->appendChild($subtitles);
+        }
+        
+        if ($this->chapters) {
+            $chapters = $dom->createElement("podcast:chapters");
+            $chapters->setAttribute("type","application/json+chapters");
+            $chapters->setAttribute("url",$this->$chapters);
+            $item->appendChild($chapters);
         }
 
         if ($this->feed_episode > 0) {
