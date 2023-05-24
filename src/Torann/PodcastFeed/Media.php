@@ -259,7 +259,7 @@ class Media
         if ($this->chapters) {
             $chapters = $dom->createElement("podcast:chapters");
             $chapters->setAttribute("type","application/json+chapters");
-            $chapters->setAttribute("url",$this->$chapters);
+            $chapters->setAttribute("url",$this->chapters);
             $item->appendChild($chapters);
         }
 
