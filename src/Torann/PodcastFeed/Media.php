@@ -139,7 +139,7 @@ class Media
         $this->transcription= $this->getValue($data, 'transcription');
         $this->subtitles    = $this->getValue($data, 'subtitles');
         $this->chapters     = $this->getValue($data, 'chapters');
-        $this->plc_chapters = $this->getValue($data, 'plc_chapters');
+        $this->plc_chapters = $data['plc_chapters'];
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
@@ -268,13 +268,13 @@ class Media
             $plc_chapters = $dom->createElement("psc:chapters");
             $plc_chapters->setAttribute("version","1.2");
             $plc_chapters->setAttribute("xmlns:psc","http://podlove.org/simple-chapters");
-            $item->appendChild($plc_chapters);
-            foreach($plc_chapters as $plc_chapter) {
+            foreach($this->plc_chapters as $plc_chapter) {
                 $new = $dom->createElement("psc:chapter");
                 $new->setAttribute("start",$plc_chapter['startTime']);
                 $new->setAttribute("title",$plc_chapter['title']);
                 $plc_chapters->appendChild($new);
             }
+            $item->appendChild($plc_chapters);
         }
 
         if ($this->feed_episode > 0) {
