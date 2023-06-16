@@ -139,7 +139,7 @@ class Media
         $this->transcription= $this->getValue($data, 'transcription');
         $this->subtitles    = $this->getValue($data, 'subtitles');
         $this->chapters     = $this->getValue($data, 'chapters');
-        $this->plc_chapters = $data['plc_chapters'];
+        $this->plc_chapters = isset($data['plc_chapters']) ? $data['plc_chapters'] : false;
 
         // Ensure publish date is a DateTime instance
         if (is_string($this->pubDate)) {
