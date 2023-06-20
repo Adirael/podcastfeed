@@ -264,10 +264,21 @@ class Media
             $item->appendChild($chapters);
         }
         
-        if ($this->plc_chapters) {
+        if ($this->plc_chapters && is_array($this->plc_chapters) && count($this->plc_chapters) > 0) {
             $plc_chapters = $dom->createElement("psc:chapters");
             $plc_chapters->setAttribute("version","1.2");
             $plc_chapters->setAttribute("xmlns:psc","http://podlove.org/simple-chapters");
+
+            array_unshift($this->plc_chapters,[
+                "startTime" => 0,
+                "title" => "Inicio"
+            ]);
+
+            $this->plc_chapters[] = [
+                "startTime" => $this->duration,
+                "title" => "Final"
+            ];
+
             foreach($this->plc_chapters as $plc_chapter) {
                 $new = $dom->createElement("psc:chapter");
                 $new->setAttribute("start",$plc_chapter['startTime']);
