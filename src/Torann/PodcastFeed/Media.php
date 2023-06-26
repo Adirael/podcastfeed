@@ -274,10 +274,12 @@ class Media
                 "title" => "Inicio"
             ]);
 
+            /*
             $this->plc_chapters[] = [
                 "startTime" => $this->duration,
                 "title" => "Final"
             ];
+            */
 
             foreach($this->plc_chapters as $plc_chapter) {
                 $new = $dom->createElement("psc:chapter");
