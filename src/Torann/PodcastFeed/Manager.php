@@ -368,6 +368,8 @@ class Manager
         if ($this->block) {
             $itune_block = $dom->createElement("itunes:block", "Yes");
             $channel->appendChild($itune_block);
+            $locked = $dom->createElement("podcast:locked", "yes");
+            $channel->appendChild($locked);
         }
 
         // Create the <itunes:owner>
