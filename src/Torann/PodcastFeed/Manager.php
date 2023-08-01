@@ -166,6 +166,8 @@ class Manager
         $this->language  = $this->getValue($data, 'language');
         $this->email     = $this->getValue($data, 'email');
         $this->copyright = $this->getValue($data, 'copyright');
+        $this->funding_url    = $this->getValue($data, 'funding_url');
+        $this->funding_text   = $this->getValue($data, 'funding_text');
     }
 
     /**
@@ -409,6 +411,12 @@ class Manager
         if ($this->explicit !== null) {
             $explicit = $dom->createElement("itunes:explicit", $this->explicit);
             $channel->appendChild($explicit);
+        }
+
+        if ($this->funding_url !== null && $this->funding_text !== null) {
+            $funding = $dom->createElement("podcast:funding", $this->funding_text);
+            $funding->setAttribute("url", $this->funding_url);
+            $channel->appendChild($funding);
         }
 
         // Create the <language>
