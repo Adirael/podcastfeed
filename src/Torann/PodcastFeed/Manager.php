@@ -272,26 +272,6 @@ class Manager
         // Create the <channel>
         $channel = $dom->createElement("channel");
         $rss->appendChild($channel);
-        
-        if(is_array($this->links) && count($this->links) > 0) {
-            foreach($this->links as $l) {
-                $atom = $dom->createElement("link",isset($l['value']) ? $l['value'] : '');
-                if(isset($l['href'])) {
-                    $atom->setAttribute("href", $l['href']);
-                }
-                if(isset($l['type'])) {
-                    $atom->setAttribute("href", $l['type']);
-                }
-                if(isset($l['rel'])) {
-                    $atom->setAttribute("rel", $l['rel']);
-                }
-                $channel->appendChild($atom);
-            }
-        } elseif(isset($this->link)) {
-            // Create the <link>
-            $link = $dom->createElement("link", $this->link);
-            $channel->appendChild($link);
-        }
 
         // Add atom:link for interoperability
         if(!empty($this->atom_link)) {
@@ -349,6 +329,26 @@ class Manager
         $summary = $dom->createElement("summary", $this->summary);
         $channel->appendChild($summary);
 
+        if(is_array($this->links) && count($this->links) > 0) {
+            foreach($this->links as $l) {
+                $atom = $dom->createElement("link",isset($l['value']) ? $l['value'] : '');
+                if(isset($l['href'])) {
+                    $atom->setAttribute("href", $l['href']);
+                }
+                if(isset($l['type'])) {
+                    $atom->setAttribute("href", $l['type']);
+                }
+                if(isset($l['rel'])) {
+                    $atom->setAttribute("rel", $l['rel']);
+                }
+                $channel->appendChild($atom);
+            }
+        } elseif(isset($this->link)) {
+            // Create the <link>
+            $link = $dom->createElement("link", $this->link);
+            $channel->appendChild($link);
+        }
+        
         // Create the <image>
         $image = $dom->createElement("image");
         $image->appendChild($title->cloneNode(true));
