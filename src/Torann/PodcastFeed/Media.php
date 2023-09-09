@@ -203,8 +203,7 @@ class Media
         }
 
         if(!empty($this->summary)) {
-          $summary = $dom->createElement("summary");
-          $description->appendChild($dom->createCDATASection($this->summary));
+          $summary = $dom->createElement("summary", $this->summary);
           $item->appendChild($summary);
         }
 
@@ -246,8 +245,6 @@ class Media
             $item->appendChild($feed_season);
         }
         
-        
-
         if ($this->transcription) {
             $transcription = $dom->createElement("podcast:transcript");
             $transcription->setAttribute("type","plain/txt");
