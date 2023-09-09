@@ -119,7 +119,7 @@ class Media
     {
         $this->title        = $this->getValue($data, 'title');
         $this->subtitle     = $this->getValue($data, 'subtitle');
-        $this->summary      = $this->getValue($data, 'summary', null, false);
+        $this->summary      = $this->getValue($data, 'summary');
         $this->description  = $this->getValue($data, 'description', null, true);
         // $this->description = strip_tags($this->getValue($data, 'description', null, true));
         // $this->content_encoded = $this->getValue($data, 'content_encoded', null, true);
@@ -200,6 +200,12 @@ class Media
           $description = $dom->createElement("description");
           $description->appendChild($dom->createCDATASection($this->description));
           $item->appendChild($description);
+        }
+
+        if(!empty($this->summary)) {
+          $summary = $dom->createElement("summary");
+          $description->appendChild($dom->createCDATASection($this->summary));
+          $item->appendChild($summary);
         }
 
         if(!empty($this->content_encoded)) {
