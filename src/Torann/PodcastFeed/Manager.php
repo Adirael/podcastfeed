@@ -346,8 +346,8 @@ class Manager
         $channel->appendChild($description);
 
         // Create the <itunes:summary>
-        $itune_summary = $dom->createElement("itunes:summary", $this->summary);
-        $channel->appendChild($itune_summary);
+        $summary = $dom->createElement("summary", $this->summary);
+        $channel->appendChild($summary);
 
         // Create the <image>
         $image = $dom->createElement("image");
