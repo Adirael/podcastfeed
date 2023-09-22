@@ -154,20 +154,22 @@ class Manager
         $this->image        = $this->getValue($data, 'image');
         $this->author       = $this->getValue($data, 'author');
         $this->categories   = $this->getValue($data, 'categories');
+        $this->link         = $this->getValue($data, 'link');
         $this->atom_link    = $this->getValue($data, 'atom_link');
         $this->links        = $this->getValue($data, 'links');
+        $this->platforms    = $this->getValue($data, 'platforms');
         $this->limit        = $this->getValue($data, 'limit');
         $this->main_country = $this->getValue($data, 'main_country');
 
         // Optional values
-        $this->block     = $this->getValue($data, 'block');
-        $this->explicit  = $this->getValue($data, 'explicit');
-        $this->subtitle  = $this->getValue($data, 'subtitle');
-        $this->language  = $this->getValue($data, 'language');
-        $this->email     = $this->getValue($data, 'email');
-        $this->copyright = $this->getValue($data, 'copyright');
-        $this->funding_url    = $this->getValue($data, 'funding_url');
-        $this->funding_text   = $this->getValue($data, 'funding_text');
+        $this->block         = $this->getValue($data, 'block');
+        $this->explicit      = $this->getValue($data, 'explicit');
+        $this->subtitle      = $this->getValue($data, 'subtitle');
+        $this->language      = $this->getValue($data, 'language');
+        $this->email         = $this->getValue($data, 'email');
+        $this->copyright     = $this->getValue($data, 'copyright');
+        $this->funding_url   = $this->getValue($data, 'funding_url');
+        $this->funding_text  = $this->getValue($data, 'funding_text');
     }
 
     /**
@@ -272,7 +274,7 @@ class Manager
         // Create the <channel>
         $channel = $dom->createElement("channel");
         $rss->appendChild($channel);
-
+        
         // Add atom:link for interoperability
         if(!empty($this->atom_link)) {
             $atom = $dom->createElement("atom:link");
@@ -331,12 +333,12 @@ class Manager
 
         if(is_array($this->links) && count($this->links) > 0) {
             foreach($this->links as $l) {
-                $atom = $dom->createElement("link",isset($l['value']) ? $l['value'] : '');
+                $atom = $dom->createElement("atom:link",isset($l['value']) ? $l['value'] : '');
                 if(isset($l['href'])) {
                     $atom->setAttribute("href", $l['href']);
                 }
                 if(isset($l['type'])) {
-                    $atom->setAttribute("href", $l['type']);
+                    $atom->setAttribute("type", $l['type']);
                 }
                 if(isset($l['rel'])) {
                     $atom->setAttribute("rel", $l['rel']);
@@ -347,6 +349,22 @@ class Manager
             // Create the <link>
             $link = $dom->createElement("link", $this->link);
             $channel->appendChild($link);
+        }
+        
+        if(is_array($this->platforms) && count($this->platforms) > 0) {
+            foreach($this->platforms as $l) {
+                $platform = $dom->createElement("podcast:id");
+                if(isset($l['url'])) {
+                    $platform->setAttribute("url", $l['url']);
+                }
+                if(isset($l['platform'])) {
+                    $platform->setAttribute("platform", $l['platform']);
+                }
+                if(isset($l['id'])) {
+                    $platform->setAttribute("id", $l['id']);
+                }
+                $channel->appendChild($platform);
+            }
         }
         
         // Create the <image>
