@@ -138,7 +138,9 @@ class Media
         $this->isPermaLink  = $this->getValue($data, 'isPermaLink');
         $this->transcription= $this->getValue($data, 'transcription');
         $this->subtitles    = $this->getValue($data, 'subtitles');
+        $this->subtitles_vtt= $this->getValue($data, 'subtitles_vtt');
         $this->chapters     = $this->getValue($data, 'chapters');
+        $this->chapters_vtt = $this->getValue($data, 'chapters_vtt');
         $this->plc_chapters = isset($data['plc_chapters']) ? $data['plc_chapters'] : false;
 
         // Ensure publish date is a DateTime instance
@@ -260,11 +262,27 @@ class Media
             $item->appendChild($subtitles);
         }
         
+        if ($this->subtitles_vtt) {
+            $subtitles = $dom->createElement("podcast:transcript");
+            $subtitles->setAttribute("type","text/vtt");
+            $subtitles->setAttribute("rel","captions");
+            $subtitles->setAttribute("url",$this->subtitles_vtt);
+            $item->appendChild($subtitles);
+        }
+        
         if ($this->chapters) {
             $chapters = $dom->createElement("podcast:chapters");
             $chapters->setAttribute("type","application/json+chapters");
             $chapters->setAttribute("url",$this->chapters);
             $item->appendChild($chapters);
+        }
+        
+        if ($this->chapters_vtt) {
+            $subtitles = $dom->createElement("podcast:chapters");
+            $subtitles->setAttribute("type","text/vtt");
+            $subtitles->setAttribute("rel","captions");
+            $subtitles->setAttribute("url",$this->chapters_vtt);
+            $item->appendChild($subtitles);
         }
         
         if ($this->plc_chapters && is_array($this->plc_chapters) && count($this->plc_chapters) > 0) {
