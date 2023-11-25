@@ -248,7 +248,7 @@ class Media
             $item->appendChild($feed_season);
         }
 
-        $feed_type = $dom->createElement("itunes:episodeType", (($this->$feed_type == 'bonus' OR $this->$feed_type == 'trailer') ? $this->$feed_type : 'full'));
+        $feed_type = $dom->createElement("itunes:episodeType", (($this->feed_type == 'bonus' OR $this->feed_type == 'trailer') ? $this->feed_type : 'full'));
         $item->appendChild($feed_type);
         
         if ($this->transcription) {
