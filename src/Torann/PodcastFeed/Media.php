@@ -133,6 +133,7 @@ class Media
         $this->author       = $this->getValue($data, 'author');
         $this->feed_season  = $this->getValue($data, 'feed_season');
         $this->feed_episode = $this->getValue($data, 'feed_episode');
+        $this->feed_type    = $this->getValue($data, 'feed_type');
         $this->image        = $this->getValue($data, 'image');
         $this->length       = $this->getValue($data, 'length');
         $this->isPermaLink  = $this->getValue($data, 'isPermaLink');
@@ -246,6 +247,9 @@ class Media
             $feed_season = $dom->createElement("itunes:season", intval($this->feed_season));
             $item->appendChild($feed_season);
         }
+
+        $feed_type = $dom->createElement("itunes:episodeType", (($this->$feed_type == 'bonus' OR $this->$feed_type == 'trailer') ? $this->$feed_type : 'full'));
+        $item->appendChild($feed_type);
         
         if ($this->transcription) {
             $transcription = $dom->createElement("podcast:transcript");
