@@ -264,6 +264,12 @@ class Media
             $subtitles->setAttribute("rel","captions");
             $subtitles->setAttribute("url",$this->subtitles);
             $item->appendChild($subtitles);
+            
+            $subtitles = $dom->createElement("podcast:transcript");
+            $subtitles->setAttribute("type","text/srt");
+            $subtitles->setAttribute("rel","captions");
+            $subtitles->setAttribute("url",$this->subtitles);
+            $item->appendChild($subtitles);
         }
         
         if ($this->subtitles_vtt) {
