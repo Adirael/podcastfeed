@@ -148,6 +148,7 @@ class Manager
         // Required
         $this->title        = $this->getValue($data, 'title');
         $this->pubDate      = $this->getValue($data, 'pubDate');
+        $this->new_feed_url = $this->getValue($data, 'new_feed_url');
         $this->feed_type    = $this->getValue($data, 'feed_type');
         $this->description  = $this->getValue($data, 'description',null,true);
         $this->summary      = $this->getValue($data, 'summary');
@@ -330,6 +331,11 @@ class Manager
         // Create the <itunes:summary>
         $summary = $dom->createElement("summary", $this->summary);
         $channel->appendChild($summary);
+
+        if(!empty($this->new_feed_url)) {
+            $new_feed_url = $dom->createElement("itunes:new-feed-url", $this->new_feed_url);
+            $channel->appendChild($new_feed_url);
+        }
 
         if(is_array($this->links) && count($this->links) > 0) {
             foreach($this->links as $l) {
