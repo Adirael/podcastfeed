@@ -131,6 +131,7 @@ class Media
         $this->duration     = $this->getValue($data, 'duration');
         $this->explicit     = $this->getValue($data, 'explicit');
         $this->author       = $this->getValue($data, 'author');
+        $this->person       = $this->getValue($data, 'person');
         $this->feed_season  = $this->getValue($data, 'feed_season');
         $this->feed_episode = $this->getValue($data, 'feed_episode');
         $this->feed_type    = $this->getValue($data, 'feed_type');
@@ -237,6 +238,31 @@ class Media
             $itune_author = $dom->createElement("itunes:author", $this->author);
             $item->appendChild($itune_author);
         }
+        
+        // Create the author
+        if ($this->person) {
+            foreach($this->person as $person) {
+                $name = '';
+
+                if(isset($person->full_name) && !empty($person->full_name)) {
+                    $name = $person->full_name;
+                } else {
+                    $name = $person->name;
+                }
+                
+                $p = $dom->createElement("podcast:person", $name);
+                
+                if(isset($person->img) && !empty($person->img)) {
+                    $p->setAttribute("img",$person->img);
+                }
+                if(isset($person->href) && !empty($person->href)) {
+                    $p->setAttribute("href",$person->href);
+                }
+                
+                $item->appendChild($p);
+            }
+        }
+        
         if ($this->link) {
             // Create the <link>
             $link = $dom->createElement("link", $this->link);
