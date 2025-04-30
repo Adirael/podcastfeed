@@ -154,6 +154,7 @@ class Manager
         $this->summary      = $this->getValue($data, 'summary');
         $this->image        = $this->getValue($data, 'image');
         $this->author       = $this->getValue($data, 'author');
+        $this->person       = $this->getValue($data, 'person');
         $this->categories   = $this->getValue($data, 'categories');
         $this->link         = $this->getValue($data, 'link');
         $this->atom_link    = $this->getValue($data, 'atom_link');
@@ -386,6 +387,29 @@ class Manager
         $itune_image->setAttribute("href", $this->image);
         $channel->appendChild($itune_image);
 
+        if ($this->person) {
+            foreach($this->person as $person) {
+                $name = '';
+
+                if(isset($person->full_name) && !empty($person->full_name)) {
+                    $name = $person->full_name;
+                } else {
+                    $name = $person->name;
+                }
+                
+                $p = $dom->createElement("podcast:person", $name);
+                
+                if(isset($person->img) && !empty($person->img)) {
+                    $p->setAttribute("img",$person->img);
+                }
+                if(isset($person->href) && !empty($person->href)) {
+                    $p->setAttribute("href",$person->href);
+                }
+                
+                $item->appendChild($p);
+            }
+        }
+        
         // Create the <itunes:author>
         $itune_author = $dom->createElement("itunes:author", $this->author);
         $channel->appendChild($itune_author);
