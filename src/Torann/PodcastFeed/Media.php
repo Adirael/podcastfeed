@@ -164,6 +164,10 @@ class Media
     {
         $value = array_get($data, $key, $default);
 
+        if($key == 'categories' OR $key == 'links' OR $key == 'person') {
+          return $value;
+        }
+
         if(!$raw) {
             return htmlspecialchars($value);
         }
@@ -199,7 +203,7 @@ class Media
         // Create the <title>
         $title = $dom->createElement("title", $this->title);
         $item->appendChild($title);
-     
+
         if(!empty($this->description)) {
           $description = $dom->createElement("description");
           $description->appendChild($dom->createCDATASection($this->description));
@@ -216,7 +220,7 @@ class Media
           $content_encoded->appendChild($dom->createCDATASection($this->content_encoded));
           $item->appendChild($content_encoded);
         }
- 
+
         // Create the <pubDate>
         $pubDate = $dom->createElement("pubDate", $this->pubDate->format(DATE_RFC2822));
         $item->appendChild($pubDate);
@@ -238,31 +242,35 @@ class Media
             $itune_author = $dom->createElement("itunes:author", $this->author);
             $item->appendChild($itune_author);
         }
-        
+
         // Create the author
         if ($this->person) {
             foreach($this->person as $person) {
                 $name = '';
 
-                if(isset($person->full_name) && !empty($person->full_name)) {
-                    $name = $person->full_name;
-                } else {
-                    $name = $person->name;
+                if(isset($person['full_name']) && !empty($person['full_name'])) {
+                    $name = $person['full_name'];
+                } elseif(isset($person['name'])) {
+                    $name = $person['name'];
                 }
-                
+
+                if(empty($name)) {
+                    continue;
+                }
+
                 $p = $dom->createElement("podcast:person", $name);
-                
-                if(isset($person->img) && !empty($person->img)) {
-                    $p->setAttribute("img",$person->img);
+
+                if(isset($person['picture']) && !empty($person['picture'])) {
+                    $p->setAttribute("img",$person['picture']);
                 }
-                if(isset($person->href) && !empty($person->href)) {
-                    $p->setAttribute("href",$person->href);
+                if(isset($person['href']) && !empty($person['href'])) {
+                    $p->setAttribute("href",$person['href']);
                 }
-                
+
                 $item->appendChild($p);
             }
         }
-        
+
         if ($this->link) {
             // Create the <link>
             $link = $dom->createElement("link", $this->link);
@@ -276,28 +284,28 @@ class Media
 
         $feed_type = $dom->createElement("itunes:episodeType", (($this->feed_type == 'bonus' OR $this->feed_type == 'trailer') ? $this->feed_type : 'full'));
         $item->appendChild($feed_type);
-        
+
         if ($this->transcription) {
             $transcription = $dom->createElement("podcast:transcript");
             $transcription->setAttribute("type","plain/txt");
             $transcription->setAttribute("url",$this->transcription);
             $item->appendChild($transcription);
         }
-       
+
         if ($this->subtitles) {
             $subtitles = $dom->createElement("podcast:transcript");
             $subtitles->setAttribute("type","application/x-subrip");
             $subtitles->setAttribute("rel","captions");
             $subtitles->setAttribute("url",$this->subtitles);
             $item->appendChild($subtitles);
-            
+
             $subtitles = $dom->createElement("podcast:transcript");
             $subtitles->setAttribute("type","text/srt");
             $subtitles->setAttribute("rel","captions");
             $subtitles->setAttribute("url",$this->subtitles);
             $item->appendChild($subtitles);
         }
-        
+
         if ($this->subtitles_vtt) {
             $subtitles = $dom->createElement("podcast:transcript");
             $subtitles->setAttribute("type","text/vtt");
@@ -305,14 +313,14 @@ class Media
             $subtitles->setAttribute("url",$this->subtitles_vtt);
             $item->appendChild($subtitles);
         }
-        
+
         if ($this->chapters) {
             $chapters = $dom->createElement("podcast:chapters");
             $chapters->setAttribute("type","application/json+chapters");
             $chapters->setAttribute("url",$this->chapters);
             $item->appendChild($chapters);
         }
-        
+
         if ($this->chapters_vtt) {
             $subtitles = $dom->createElement("podcast:chapters");
             $subtitles->setAttribute("type","text/vtt");
@@ -320,7 +328,7 @@ class Media
             $subtitles->setAttribute("url",$this->chapters_vtt);
             $item->appendChild($subtitles);
         }
-        
+
         if ($this->plc_chapters && is_array($this->plc_chapters) && count($this->plc_chapters) > 0) {
             $plc_chapters = $dom->createElement("psc:chapters");
             $plc_chapters->setAttribute("version","1.2");
