@@ -147,6 +147,7 @@ class Manager
     {
         // Required
         $this->title        = $this->getValue($data, 'title');
+        $this->guid         = $this->getValue($data, 'guid');
         $this->pubDate      = $this->getValue($data, 'pubDate');
         $this->new_feed_url = $this->getValue($data, 'new_feed_url');
         $this->feed_type    = $this->getValue($data, 'feed_type');
@@ -290,6 +291,9 @@ class Manager
         // Create the <title>
         $title = $dom->createElement("title", $this->title);
         $channel->appendChild($title);
+
+        $guid = $dom->createElement("podcast:guid", $this->guid);
+        $channel->appendChild($guid);
 
         // Create the <itunes:subtitle>
         if ($this->subtitle != null) {
