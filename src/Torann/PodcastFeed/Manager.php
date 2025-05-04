@@ -193,12 +193,12 @@ class Manager
         return htmlspecialchars($value);
     }
      */
-    
+
     public function getValue($data, $key, $default = null, $raw = false)
     {
         $value = array_get($data, $key, $default);
 
-        if($key == 'categories' OR $key == 'links') {
+        if($key == 'categories' OR $key == 'links' OR $key == 'person') {
           return $value;
         }
 
@@ -259,6 +259,7 @@ class Manager
      */
     private function generate()
     {
+
         // Create the DOM
         $dom = new \DOMDocument("1.0", "utf-8");
 
@@ -276,7 +277,7 @@ class Manager
         // Create the <channel>
         $channel = $dom->createElement("channel");
         $rss->appendChild($channel);
-        
+
         // Add atom:link for interoperability
         if(!empty($this->atom_link)) {
             $atom = $dom->createElement("atom:link");
@@ -357,7 +358,7 @@ class Manager
             $link = $dom->createElement("link", $this->link);
             $channel->appendChild($link);
         }
-        
+
         if(is_array($this->platforms) && count($this->platforms) > 0) {
             foreach($this->platforms as $l) {
                 $platform = $dom->createElement("podcast:id");
@@ -373,7 +374,7 @@ class Manager
                 $channel->appendChild($platform);
             }
         }
-        
+
         // Create the <image>
         $image = $dom->createElement("image");
         $image->appendChild($title->cloneNode(true));
@@ -391,25 +392,29 @@ class Manager
             foreach($this->person as $person) {
                 $name = '';
 
-                if(isset($person->full_name) && !empty($person->full_name)) {
-                    $name = $person->full_name;
-                } else {
-                    $name = $person->name;
+                if(isset($person['full_name']) && !empty($person['full_name'])) {
+                    $name = $person['full_name'];
+                } elseif(isset($person['name'])) {
+                    $name = $person['name'];
                 }
-                
+
+                if(empty($name)) {
+                    continue;
+                }
+
                 $p = $dom->createElement("podcast:person", $name);
-                
-                if(isset($person->img) && !empty($person->img)) {
-                    $p->setAttribute("img",$person->img);
+
+                if(isset($person['picture']) && !empty($person['picture'])) {
+                    $p->setAttribute("img",$person['picture']);
                 }
-                if(isset($person->href) && !empty($person->href)) {
-                    $p->setAttribute("href",$person->href);
+                if(isset($person['href']) && !empty($person['href'])) {
+                    $p->setAttribute("href",$person['href']);
                 }
-                
-                $item->appendChild($p);
+
+                $channel->appendChild($p);
             }
         }
-        
+
         // Create the <itunes:author>
         $itune_author = $dom->createElement("itunes:author", $this->author);
         $channel->appendChild($itune_author);
