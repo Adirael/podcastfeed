@@ -148,6 +148,7 @@ class Manager
         // Required
         $this->title        = $this->getValue($data, 'title');
         $this->guid         = $this->getValue($data, 'guid');
+        $this->related      = $this->getValue($data, 'related');
         $this->pubDate      = $this->getValue($data, 'pubDate');
         $this->new_feed_url = $this->getValue($data, 'new_feed_url');
         $this->feed_type    = $this->getValue($data, 'feed_type');
@@ -341,6 +342,51 @@ class Manager
         if(!empty($this->new_feed_url)) {
             $new_feed_url = $dom->createElement("itunes:new-feed-url", $this->new_feed_url);
             $channel->appendChild($new_feed_url);
+        }
+
+        if(isset($this->related) && !empty($this->related)) {
+//             <podcast:podroll>
+//   <podcast:remoteItem feedGuid="29cdca4a-32d8-56ba-b48b-09a011c5daa9" />
+//   <podcast:remoteItem feedGuid="396d9ae0-da7e-5557-b894-b606231fa3ea" />
+//   <podcast:remoteItem feedGuid="917393e3-1b1e-5cef-ace4-edaa54e1f810" />
+// </podcast:podroll><podcast:remoteItem feedGuid="917393e3-1b1e-5cef-ace4-edaa54e1f810" />
+
+// <podcast:remoteItem
+//     feedGuid="917393e3-1b1e-5cef-ace4-edaa54e1f810"
+//     itemGuid="asdf089j0-ep240-20230510"
+// />
+
+// <podcast:remoteItem
+//     feedGuid="917393e3-1b1e-5cef-ace4-edaa54e1f810"
+//     feedUrl="https://feeds.example.org/917393e3-1b1e-5cef-ace4-edaa54e1f810/rss.xml"
+//     itemGuid="asdf089j0-ep240-20230510"
+//     medium="music"
+//     title="Here Comes the Sun"
+// />
+            
+        // $image = $dom->createElement("image");
+        // $image->appendChild($title->cloneNode(true));
+        // // $image->appendChild($link->cloneNode(true));
+        // $channel->appendChild($image);
+        // $image_url = $dom->createElement("url", $this->image);
+        // $image->appendChild($image_url);
+            
+            $podroll = $dom->createElement("podcast:podroll");
+            $channel->appendChild($podroll);
+            foreach($this->related as $related_show) {
+                $podroll=>appendChild(
+                $remoteItem = $dom->createElement("podcast:remoteItem");
+                if(isset($related_show['feedGuid'])) {
+                    $remoteItem->setAttribute("feedGuid", $related_show['feedGuid']);
+                }
+                if(isset($related_show['feedUrl'])) {
+                    $remoteItem->setAttribute("feedUrl", $related_show['feedUrl']);
+                }
+                if(isset($related_show['title'])) {
+                    $remoteItem->setAttribute("title", $related_show['title']);
+                }
+                $podroll->appendChild($remoteItem);
+            }
         }
 
         if(is_array($this->links) && count($this->links) > 0) {
